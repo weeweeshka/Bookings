@@ -1,9 +1,10 @@
 package config
 
 import (
-	"fmt"
+	"log"
+	"os"
 
-	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -12,12 +13,49 @@ type Config struct {
 	DatabasePort     string `env:"DB_PORT"`
 	DatabaseUser     string `env:"DB_USER"`
 	DatabasePassword string `env:"DB_PASSWORD"`
+	DatabaseUrl      string `env:"DB_URL"`
 }
 
-func MustLoad() (*Config, error) {
-	cfg, err := env.ParseAs[Config]()
-	if err != nil {
-		return nil, fmt.Errorf("failed to load config: %w", err)
+func MustLoad() *Config {
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: No .env file found: %v", err)
 	}
-	return &cfg, nil
+
+	cfg := Config{
+		DatabaseHost: "localhost",
+		DatabasePort: "5432",
+	}
+
+	if dbName := os.Getenv("DB_NAME"); dbName != "" {
+		cfg.DatabaseName = dbName
+	}
+
+	if dbHost := os.Getenv("DB_HOST"); dbHost != "" {
+		cfg.DatabaseHost = dbHost
+	}
+
+	if dbPort := os.Getenv("DB_PORT"); dbPort != "" {
+		cfg.DatabasePort = dbPort
+	}
+
+	if dbUser := os.Getenv("DB_USER"); dbUser != "" {
+		cfg.DatabaseUser = dbUser
+	}
+
+	if dbPass := os.Getenv("DB_PASSWORD"); dbPass != "" {
+		cfg.DatabasePassword = dbPass
+	}
+
+	if dbUrl := os.Getenv("DB_URL"); dbUrl != "" {
+		cfg.DatabaseUrl = dbUrl
+	}
+
+	if cfg.DatabaseName == "" {
+		log.Fatal("DB_NAME is required")
+	}
+	if cfg.DatabaseUser == "" {
+		log.Fatal("DB_USER is required")
+	}
+
+	return &cfg
 }
