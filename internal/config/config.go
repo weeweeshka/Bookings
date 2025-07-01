@@ -13,11 +13,11 @@ type Config struct {
 	DatabasePort     string `env:"DB_PORT"`
 	DatabaseUser     string `env:"DB_USER"`
 	DatabasePassword string `env:"DB_PASSWORD"`
-	DatabaseUrl      string `env:"DB_URL"`
+	DatabaseUrl      string `env:"DB_URL" env-default:"postgres://postgres:postgres@localhost:5432/bookings?sslmode=disable"`
 }
 
 func MustLoad() *Config {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load("D:/Bookings-1/.env"); err != nil {
 		log.Printf("Warning: No .env file found: %v", err)
 	}
 

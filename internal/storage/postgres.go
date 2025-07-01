@@ -34,5 +34,26 @@ func NewPostgresDb(conf *config.Config) (*Postgres, error) {
 		return nil, fmt.Errorf("%s: ping failed: %w", op, err)
 	}
 
+	_, err = conn.Prepare(ctx, "create_bookings_table",
+		`CREATE TABLE IF NOT EXISTS bookings(
+	id INTEGER PRIMARY KEY,
+	country TEXT NOT NULL,
+	city TEXT NOT NULL,
+	hotel_name TEXT NOT NULL,
+	stars INTEGER NOT NULL CHECK (stars BETWEEN 1 AND 5))`)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create prepare: %w", op, err)
+	}
+
+	_, err = conn.Exec(ctx, "create_bookings_table")
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create bookings table: %w", op, err)
+	}
+
 	return &Postgres{conn: conn}, nil
 }
+
+// func (pos *Postgres) CreateBooking() error {
+
+// }

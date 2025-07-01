@@ -1,22 +1,20 @@
-version: '3.8'
+
 
 services:
+
   db:
-    image: postgres:latest
+    image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}  =
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_DB: ${DB_NAME:-bookings}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRESQL_LOG_STATEMENT: "all"  
+      POSTGRESQL_LOG_LINE_PREFIX: "%t [%p]: [%l-1] "
+    command: >
+      -c log_statement=all
+      -c log_destination=stderr
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - ${DB_PORT}:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data  ]
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data: 
+      - ./pgdata:/var/lib/postgresql
