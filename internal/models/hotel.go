@@ -1,0 +1,8 @@
+package models
+
+type Hotel struct {
+	Country   string `json:"country"`
+	City      string `json:"city"`
+	HotelName string `json:"hotel_name"`
+	Stars     int    `json:"stars"`
+}
