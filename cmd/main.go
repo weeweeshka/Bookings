@@ -4,6 +4,7 @@ import (
 	"bookings/internal/config"
 	"bookings/internal/logger"
 	"bookings/internal/storage"
+	"fmt"
 	"log/slog"
 	"os"
 )
@@ -19,8 +20,9 @@ func main() {
 	if err != nil {
 		slog.Error("failed to init storage", slog.Attr{Key: "error", Value: slog.StringValue(err.Error())})
 		os.Exit(1)
-		slog.Info("DB connected!")
 	}
+	slog.Info("DB connected!")
 
-	postgres.CreateHotel("Россия", "Нальчик", "Веселый сыпыс", 5)
+	fmt.Println(postgres.GetAllHotelRooms())
+
 }
