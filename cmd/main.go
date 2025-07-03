@@ -4,7 +4,6 @@ import (
 	"bookings/internal/config"
 	"bookings/internal/logger"
 	"bookings/internal/storage"
-	"fmt"
 	"log/slog"
 	"os"
 )
@@ -23,6 +22,6 @@ func main() {
 	}
 	slog.Info("DB connected!")
 
-	fmt.Println(postgres.GetAllHotelRooms())
+	_ = postgres
 
 }
