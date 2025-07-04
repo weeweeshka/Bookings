@@ -14,6 +14,7 @@ type Config struct {
 	DatabaseUser     string `env:"DB_USER"`
 	DatabasePassword string `env:"DB_PASSWORD"`
 	DatabaseUrl      string `env:"DB_URL" env-default:"postgres://postgres:postgres@localhost:5432/bookings?sslmode=disable"`
+	Reload           bool   `env:"Reload"`
 }
 
 func MustLoad() *Config {
@@ -24,6 +25,7 @@ func MustLoad() *Config {
 	cfg := Config{
 		DatabaseHost: "localhost",
 		DatabasePort: "5432",
+		Reload:       false,
 	}
 
 	if dbName := os.Getenv("DB_NAME"); dbName != "" {
