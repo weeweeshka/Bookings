@@ -3,6 +3,7 @@ package main
 import (
 	"bookings/internal/config"
 	"bookings/internal/logger"
+	"bookings/internal/router"
 	"bookings/internal/storage"
 	"log/slog"
 	"os"
@@ -22,8 +23,9 @@ func main() {
 	}
 	slog.Info("DB connected!")
 
-	postgres.CreateHotel("Россия", "Нальчик", "Веселый сыпыс", 5)
-	postgres.CreateHotelRoom(1, 2, true, true, true, false)
-	postgres.CreateVisitor(1, 1, "Сыпыс", "Сыпысвич", 56)
+	_ = postgres
+
+	router := router.SetupRouter()
+	router.Run(":8080")
 
 }
