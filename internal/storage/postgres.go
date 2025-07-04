@@ -2,6 +2,7 @@ package storage
 
 import (
 	"bookings/internal/config"
+	_ "bookings/internal/migrations"
 	"context"
 	"database/sql"
 	"fmt"
@@ -21,7 +22,6 @@ func NewPostgresDb(conf *config.Config) (*Postgres, error) {
 	const op = "storage.postgres.NewPostgresDB"
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	conn, err := pgx.Connect(ctx, conf.DatabaseUrl)
 	if err != nil {
 		return nil, fmt.Errorf("%s: connection failed: %w", op, err)
@@ -45,23 +45,12 @@ func NewPostgresDb(conf *config.Config) (*Postgres, error) {
 	}
 
 	slog.Info("Migration started!")
-	err = goose.Up(sqlDB, ".")
+	err = goose.Up(sqlDB, "D:/Bookings-1/internal/migrations")
 	if err != nil {
 		return nil, fmt.Errorf("%s: Migration failed: %w", op, err)
 	}
 
 	// HOTELS TABLE
-	_, err = conn.Exec(ctx, `
-		CREATE TABLE IF NOT EXISTS hotels(
-			id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-			country TEXT NOT NULL,
-			city TEXT NOT NULL,
-			hotel_name TEXT NOT NULL UNIQUE,
-			stars INTEGER NOT NULL CHECK (stars BETWEEN 1 AND 5)
-		)`)
-	if err != nil {
-		return nil, fmt.Errorf("%s: create table failed: %w", op, err)
-	}
 
 	// CreateHotel stmt
 	_, err = conn.Prepare(ctx, "create_hotel", `INSERT INTO hotels(country, city, hotel_name, stars) VALUES($1, $2, $3, $4)`)
@@ -98,18 +87,6 @@ func NewPostgresDb(conf *config.Config) (*Postgres, error) {
 	}
 
 	//HOTELROOMS TABLE
-	_, err = conn.Exec(ctx, `CREATE TABLE IF NOT EXISTS hotel_rooms(
-	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	hotel_id INTEGER NOT NULL,
-	rooms INTEGER,
-	meals BOOLEAN,
-	bar BOOLEAN,
-	service BOOLEAN,
-	busy BOOLEAN,
-	FOREIGN KEY (hotel_id) REFERENCES hotels(id))`)
-	if err != nil {
-		return nil, fmt.Errorf("%s: create table failed: %w", op, err)
-	}
 
 	// CreateHotelRoom stmt
 	_, err = conn.Prepare(ctx, "create_hotel_room", `INSERT INTO hotel_rooms(hotel_id, rooms, meals, bar, service, busy)
@@ -144,18 +121,6 @@ func NewPostgresDb(conf *config.Config) (*Postgres, error) {
 	}
 
 	// VISITORS TABLE
-
-	_, err = conn.Exec(ctx, `CREATE TABLE IF NOT EXISTS visitors(
-	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	hotel_id INTEGER NOT NULL,
-	hotel_room_id INTEGER NOT NULL,
-	first_name TEXT,
-	last_name TEXT,
-	age INTEGER CHECK (age BETWEEN 18 AND 100),
-	FOREIGN KEY (hotel_room_id) REFERENCES hotel_rooms(id))`)
-	if err != nil {
-		return nil, fmt.Errorf("%s: create table failed: %w", op, err)
-	}
 
 	// CreateVisitor stmt
 

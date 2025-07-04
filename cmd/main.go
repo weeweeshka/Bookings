@@ -22,6 +22,8 @@ func main() {
 	}
 	slog.Info("DB connected!")
 
-	_ = postgres
+	postgres.CreateHotel("Россия", "Нальчик", "Веселый сыпыс", 5)
+	postgres.CreateHotelRoom(1, 2, true, true, true, false)
+	postgres.CreateVisitor(1, 1, "Сыпыс", "Сыпысвич", 56)
 
 }
